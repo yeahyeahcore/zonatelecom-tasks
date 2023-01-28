@@ -5,27 +5,26 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/sirupsen/logrus"
-
 	"github.com/yeahyeahcore/zonatelecom-tasks/internal/core"
 	"github.com/yeahyeahcore/zonatelecom-tasks/pkg/client"
 )
 
 const (
-	votingStateURL = "/voting-stats"
+	checkDigestURL = "/check"
 )
 
-type GammaClientDeps struct {
+type DigestClientDeps struct {
 	Logger        *logrus.Logger
-	Configuration *core.GammaServiceConfiguration
+	Configuration *core.DigestServiceConfiguration
 }
 
-type GammaClient struct {
+type DigestClient struct {
 	logger *logrus.Logger
 	client *resty.Client
 }
 
-func NewGammaClient(deps *GammaClientDeps) *GammaClient {
-	return &GammaClient{
+func NewDigestClient(deps *DigestClientDeps) *DigestClient {
+	return &DigestClient{
 		logger: deps.Logger,
 		client: resty.New().
 			EnableTrace().
@@ -33,12 +32,12 @@ func NewGammaClient(deps *GammaClientDeps) *GammaClient {
 	}
 }
 
-func (receiver *GammaClient) SendVotingState(request *core.VotingState) error {
-	if _, err := client.Post(votingStateURL, &client.RequestSettings[interface{}]{
+func (receiver *DigestClient) Check(digest string) error {
+	if _, err := client.Post(checkDigestURL, &client.RequestSettings[interface{}]{
 		Driver: receiver.client,
-		Body:   request,
+		Body:   map[string]string{"digest": digest},
 	}); err != nil {
-		requestError := fmt.Errorf("send voting state request error: %s", err.Error())
+		requestError := fmt.Errorf("check digest request error: %s", err.Error())
 		receiver.logger.Errorln(requestError)
 		return requestError
 	}

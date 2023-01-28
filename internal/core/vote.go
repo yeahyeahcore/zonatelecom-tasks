@@ -1,5 +1,12 @@
 package core
 
+type CreateVoteRequest struct {
+	VoteID   string `json:"voteId"`
+	VotingID string `json:"votingId"`
+	OptionID string `json:"optionId"`
+	Digest   string `json:"digest"`
+}
+
 type VotingState struct {
 	VotingID string            `json:"votingId"`
 	Results  []VoteStateResult `json:"results"`

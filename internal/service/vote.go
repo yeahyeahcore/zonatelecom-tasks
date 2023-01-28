@@ -25,11 +25,16 @@ type gammaClient interface {
 	SendVotingState(request *core.VotingState) error
 }
 
+type digestClient interface {
+	Check(digest string) error
+}
+
 type VoteServiceDeps struct {
 	Logger                    *logrus.Logger
 	VoteRepository            voteRepository
 	PrevVotingStateRepository prevVotingStateRepository
 	GammaClient               gammaClient
+	DigestClient              digestClient
 }
 
 type VoteService struct {
@@ -37,6 +42,7 @@ type VoteService struct {
 	voteRepository                voteRepository
 	previousVotingStateRepository prevVotingStateRepository
 	gammaClient                   gammaClient
+	digestClient                  digestClient
 }
 
 func NewVoteService(deps *VoteServiceDeps) *VoteService {
@@ -45,17 +51,27 @@ func NewVoteService(deps *VoteServiceDeps) *VoteService {
 		voteRepository:                deps.VoteRepository,
 		previousVotingStateRepository: deps.PrevVotingStateRepository,
 		gammaClient:                   deps.GammaClient,
+		digestClient:                  deps.DigestClient,
 	}
 }
 
-func (receiver *VoteService) InsertVote(ctx context.Context, vote *models.Vote) error {
+func (receiver *VoteService) InsertVote(ctx context.Context, vote *core.CreateVoteRequest) error {
+	if err := receiver.digestClient.Check(vote.Digest); err != nil {
+		receiver.logger.Errorf("failed to check digest in VoteService method <InsertVote>: %s", err.Error())
+		return err
+	}
+
 	votingState, err := receiver.voteRepository.GetVotingState(ctx, vote.VotingID)
 	if err != nil && err != repository.ErrNoRecords {
 		receiver.logger.Errorf("failed to get voting state in VoteService method <InsertVote>: %s", err.Error())
 		return err
 	}
 
-	if _, err := receiver.voteRepository.InsertVote(ctx, vote); err != nil {
+	if _, err := receiver.voteRepository.InsertVote(ctx, &models.Vote{
+		VoteID:   vote.VoteID,
+		VotingID: vote.VotingID,
+		OptionID: vote.OptionID,
+	}); err != nil {
 		receiver.logger.Errorf("failed to insert vote in VoteService method <InsertVote>: %s", err.Error())
 		return err
 	}

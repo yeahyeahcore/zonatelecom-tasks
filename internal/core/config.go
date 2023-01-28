@@ -16,9 +16,14 @@ type HTTPConfiguration struct {
 }
 
 type ServiceConfiguration struct {
-	GammaServiceConfiguration GammaServiceConfiguration
+	GammaServiceConfiguration  GammaServiceConfiguration
+	DigestServiceConfiguration DigestServiceConfiguration
 }
 
 type GammaServiceConfiguration struct {
-	BaseURL string `env:"BETA_SERVICE_URL,default=localhost"`
+	BaseURL string `env:"GAMMA_SERVICE_URL,default=localhost"`
+}
+
+type DigestServiceConfiguration struct {
+	BaseURL string `env:"DIGEST_SERVICE_URL,default=localhost"`
 }

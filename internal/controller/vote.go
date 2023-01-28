@@ -6,12 +6,12 @@ import (
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 
-	"github.com/yeahyeahcore/zonatelecom-tasks/internal/models"
+	"github.com/yeahyeahcore/zonatelecom-tasks/internal/core"
 	"github.com/yeahyeahcore/zonatelecom-tasks/pkg/json"
 )
 
 type voteService interface {
-	InsertVote(ctx context.Context, vote *models.Vote) error
+	InsertVote(ctx context.Context, vote *core.CreateVoteRequest) error
 }
 
 type VoteControllerDeps struct {
@@ -32,7 +32,7 @@ func NewVoteController(deps *VoteControllerDeps) *VoteController {
 }
 
 func (receiver *VoteController) CreateVote(ctx echo.Context) error {
-	voteBody, err := json.Parse[models.Vote](ctx.Request().Body)
+	voteBody, err := json.Parse[core.CreateVoteRequest](ctx.Request().Body)
 	if err != nil {
 		return responseBadRequest(ctx, err)
 	}
