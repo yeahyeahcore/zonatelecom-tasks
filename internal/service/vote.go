@@ -7,6 +7,7 @@ import (
 	"github.com/yeahyeahcore/zonatelecom-tasks/internal/core"
 	"github.com/yeahyeahcore/zonatelecom-tasks/internal/models"
 	"github.com/yeahyeahcore/zonatelecom-tasks/internal/repository"
+	"github.com/yeahyeahcore/zonatelecom-tasks/internal/utils"
 )
 
 type VoteRepository interface {
@@ -44,7 +45,7 @@ func NewVoteService(deps *VoteServiceDeps) *VoteService {
 func (receiver *VoteService) InsertVote(ctx context.Context, vote *models.Vote) error {
 	votingState, err := receiver.voteRepository.GetVotingState(ctx, vote.VotingID)
 	if err != nil && err != repository.ErrNoRecords {
-		receiver.logger.Errorf("failed to get voting states in VoteService method <InsertVote>: %s", err.Error())
+		receiver.logger.Errorf("failed to get voting state in VoteService method <InsertVote>: %s", err.Error())
 		return err
 	}
 
@@ -62,17 +63,20 @@ func (receiver *VoteService) InsertVote(ctx context.Context, vote *models.Vote) 
 }
 
 func (receiver *VoteService) CheckVotingPercentageChange(ctx context.Context) ([]*core.VotingState, error) {
-	votingStates, err := receiver.voteRepository.GetVotingStates(ctx)
+	currentVotingStates, err := receiver.voteRepository.GetVotingStates(ctx)
 	if err != nil && err != repository.ErrNoRecords {
-		receiver.logger.Errorf("failed to get voting states in VoteService method <InsertVote>: %s", err.Error())
+		receiver.logger.Errorf("failed to get voting states in VoteService method <CheckVotingPercentageChange>: %s", err.Error())
 		return []*core.VotingState{}, err
 	}
 
 	previousVotingStates, err := receiver.previousVotingStateRepository.GetPreviousVotingStates(ctx, nil)
 	if err != nil {
-		receiver.logger.Errorf("failed to insert previous voting states in VoteService method <InsertVote>: %s", err.Error())
+		receiver.logger.Errorf("failed to get previous voting states in VoteService method <CheckVotingPercentageChange>: %s", err.Error())
 		return []*core.VotingState{}, err
 	}
+
+	currentVotingStatesCore := utils.TransferVotingStateModelsToCore(currentVotingStates)
+	previousVotingStatesCore := utils.TransferVotingStateModelsToCore(previousVotingStates)
 
 	return nil
 }

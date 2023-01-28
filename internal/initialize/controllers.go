@@ -17,8 +17,7 @@ type Controllers struct {
 func NewControllers(deps *ControllersDeps) *Controllers {
 	return &Controllers{
 		VoteController: *controller.NewVoteController(&controller.VoteControllerDeps{
-			Logger:         deps.Logger,
-			VoteRepository: deps.Repositories.VoteRepository,
+			Logger: deps.Logger,
 		}),
 	}
 }
