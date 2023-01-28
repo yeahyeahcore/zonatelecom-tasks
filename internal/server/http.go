@@ -20,7 +20,7 @@ func New(logger *logrus.Logger) *HTTP {
 	echo := echo.New()
 
 	echo.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "[${method}]: ${uri} ${status} ${time_rfc3339}\n",
+		Format: "[${method}]: ${uri} ${status} ${time_rfc3339} (trace: ${latency_human})\n",
 	}))
 	echo.Use(middleware.Recover())
 

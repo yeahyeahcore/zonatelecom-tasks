@@ -2,8 +2,6 @@ package controller
 
 import (
 	"context"
-	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
@@ -14,9 +12,8 @@ import (
 )
 
 type VoteRepository interface {
-	GetVotes(ctx context.Context, queryModel *models.Vote) (*[]models.Vote, error)
-	GetVote(ctx context.Context, queryModel *models.Vote) (*models.Vote, error)
-	CreateVote(ctx context.Context, queryModel *models.Vote) (*models.Vote, error)
+	GetVotingState(ctx context.Context, query *models.Vote) (*models.VotingState, error)
+	CreateVote(ctx context.Context, query *models.Vote) (*models.Vote, error)
 }
 
 type VoteControllerDeps struct {
@@ -36,52 +33,19 @@ func NewVotesController(deps *VoteControllerDeps) *VotesController {
 	}
 }
 
-func (receiver *VotesController) GetAllVotess(ctx echo.Context) error {
-	debts, err := receiver.debtRepository.GetVotes(ctx.Request().Context(), nil)
+func (receiver *VotesController) CreateVote(ctx echo.Context) error {
+	voteBody, err := json.Parse[models.Vote](ctx.Request().Body)
 	if err != nil {
-		if err == repository.ErrNoRecords {
-			return notFoundError(ctx, err)
+		return responseBadRequest(ctx, err)
+	}
+
+	if _, err := receiver.debtRepository.CreateVote(ctx.Request().Context(), voteBody); err != nil {
+		if err == repository.ErrAlreadyExist {
+			return responseConflict(ctx, err)
 		}
 
-		return internalError(ctx, err)
+		return responseInternal(ctx, err)
 	}
 
-	return ctx.JSON(http.StatusOK, debts)
-}
-
-func (receiver *VotesController) GetVotes(ctx echo.Context) error {
-	debtBody, err := json.Parse[models.Vote](ctx.Request().Body)
-	if err != nil {
-		return badRequestError(ctx, err)
-	}
-
-	debt, err := receiver.debtRepository.GetVotes(ctx.Request().Context(), debtBody)
-	if err != nil {
-		if err == repository.ErrNoRecords {
-			return notFoundError(ctx, err)
-		}
-
-		return internalError(ctx, err)
-	}
-
-	return ctx.JSON(http.StatusOK, debt)
-}
-
-func (receiver *VotesController) GetVoteByID(ctx echo.Context) error {
-	id := ctx.Param("id")
-	parsedID, err := strconv.ParseUint(id, 10, 32)
-	if err != nil {
-		return badRequestError(ctx, err)
-	}
-
-	debt, err := receiver.debtRepository.GetVotes(ctx.Request().Context(), &models.Vote{ID: uint(parsedID)})
-	if err != nil {
-		if err == repository.ErrNoRecords {
-			return notFoundError(ctx, err)
-		}
-
-		return internalError(ctx, err)
-	}
-
-	return ctx.JSON(http.StatusOK, debt)
+	return responseOK(ctx)
 }

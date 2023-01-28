@@ -1,6 +1,6 @@
 package core
 
 type HTTPErrorResponse struct {
-	Message    string `json:"message"`
-	StatusCode int    `json:"statusCode"`
+	Message *string `json:"message,omitempty"`
+	Result  string  `json:"result"`
 }
