@@ -18,7 +18,6 @@ type VoteRepository interface {
 
 type PrevVotingStateRepository interface {
 	GetPreviousVotingStates(ctx context.Context, query *models.VotingState) ([]*models.VotingState, error)
-	InsertPreviousVotingState(ctx context.Context, query *models.VotingState) (*models.VotingState, error)
 	InsertPreviousVotingStates(ctx context.Context, query []*models.VotingState) ([]*models.VotingState, error)
 }
 
@@ -75,10 +74,10 @@ func (receiver *VoteService) CheckVotingPercentageChange(ctx context.Context) ([
 		return []*core.VotingState{}, err
 	}
 
-	currentVotingStatesCore := utils.TransferVotingStateModelsToCore(currentVotingStates)
-	previousVotingStatesCore := utils.TransferVotingStateModelsToCore(previousVotingStates)
-	currentVotingStatesMap := utils.TransferVotingStatesToOptionsMap(currentVotingStatesCore)
-	previousVotingStatesMap := utils.TransferVotingStatesToOptionsMap(previousVotingStatesCore)
+	currentVotingStatesMap := utils.TransferVotingStatesToOptionsMap(currentVotingStates)
+	previousVotingStatesMap := utils.TransferVotingStatesToOptionsMap(previousVotingStates)
+
+	changedVotingState := make([]*core.VotingState, 0)
 
 	for _, currentVotingState := range currentVotingStatesMap {
 		for _, previousVotingState := range previousVotingStatesMap {
@@ -86,9 +85,11 @@ func (receiver *VoteService) CheckVotingPercentageChange(ctx context.Context) ([
 				continue
 			}
 
-			difference := utils.GetVotingPercentageDifference(currentVotingState.Options, previousVotingState.Options)
+			if difference := utils.GetVotingPercentageDifference(currentVotingState.Options, previousVotingState.Options); len(difference) >= 1 {
+				changedVotingState = append(changedVotingState, utils.TransferVotingStateToCore(currentVotingState))
+			}
 		}
 	}
 
-	return nil
+	return changedVotingState, nil
 }

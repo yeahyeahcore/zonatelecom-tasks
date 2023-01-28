@@ -5,10 +5,39 @@ import (
 	"github.com/yeahyeahcore/zonatelecom-tasks/internal/models"
 )
 
-func TransferVotingStateModelsToCore(models []*models.VotingState) []*core.VotingState {
+func TransferVotingStatesToCore(votingStates []*core.VotingStateOptionsMap) []*core.VotingState {
+	transferedVotingState := make([]*core.VotingState, len(votingStates))
+
+	for index, votingState := range votingStates {
+		transferedVotingState[index] = TransferVotingStateToCore(votingState)
+	}
+
+	return transferedVotingState
+}
+
+func TransferVotingStateToCore(votingState *core.VotingStateOptionsMap) *core.VotingState {
+	results := make([]core.VoteStateResult, len(votingState.Options))
+	optionsIterationNumber := 0
+
+	for optionID, optionCount := range votingState.Options {
+		results[optionsIterationNumber] = core.VoteStateResult{
+			OptionID: optionID,
+			Count:    optionCount,
+		}
+
+		optionsIterationNumber++
+	}
+
+	return &core.VotingState{
+		VotingID: votingState.VotingID,
+		Results:  results,
+	}
+}
+
+func TransferVotingStatesToOptionsMap(votingStates []*models.VotingState) []*core.VotingStateOptionsMap {
 	transferedVotingStateMap := make(map[string][]core.VoteStateResult)
 
-	for _, votingState := range models {
+	for _, votingState := range votingStates {
 		transferedVotingStateMap[votingState.VotingID] = append(transferedVotingStateMap[votingState.VotingID], core.VoteStateResult{
 			OptionID: votingState.OptionID,
 			Count:    votingState.Count,
@@ -16,34 +45,21 @@ func TransferVotingStateModelsToCore(models []*models.VotingState) []*core.Votin
 	}
 
 	transferedVotingStateMapIterationNumber := 0
-	transferedVotingState := make([]*core.VotingState, len(transferedVotingStateMap))
+	transferedVotingStateOptionsMap := make([]*core.VotingStateOptionsMap, len(transferedVotingStateMap))
 
-	for key, result := range transferedVotingStateMap {
-		transferedVotingState[transferedVotingStateMapIterationNumber] = &core.VotingState{
+	for key, results := range transferedVotingStateMap {
+		optionsMap := make(map[string]uint)
+
+		for _, result := range results {
+			optionsMap[result.OptionID] += result.Count
+		}
+
+		transferedVotingStateOptionsMap[transferedVotingStateMapIterationNumber] = &core.VotingStateOptionsMap{
 			VotingID: key,
-			Results:  result,
+			Options:  optionsMap,
 		}
 
 		transferedVotingStateMapIterationNumber++
-	}
-
-	return transferedVotingState
-}
-
-func TransferVotingStatesToOptionsMap(votingStates []*core.VotingState) []*core.VotingStateOptionsMap {
-	transferedVotingStateOptionsMap := make([]*core.VotingStateOptionsMap, len(votingStates))
-
-	for index, votingState := range votingStates {
-		optionsMap := make(map[string]uint)
-
-		for _, count := range votingState.Results {
-			optionsMap[count.OptionID] = count.Count
-		}
-
-		transferedVotingStateOptionsMap[index] = &core.VotingStateOptionsMap{
-			VotingID: votingState.VotingID,
-			Options:  optionsMap,
-		}
 	}
 
 	return transferedVotingStateOptionsMap
