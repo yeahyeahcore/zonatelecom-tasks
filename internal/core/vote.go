@@ -1,11 +1,16 @@
 package core
 
-type VoteState struct {
+type VotingState struct {
 	VotingID string            `json:"votingId"`
-	Results  []voteStateResult `json:"results"`
+	Results  []VoteStateResult `json:"results"`
 }
 
-type voteStateResult struct {
+type VotingStateOptionsMap struct {
+	VotingID string          `json:"votingId"`
+	Options  map[string]uint `json:"options"`
+}
+
+type VoteStateResult struct {
 	OptionID string `json:"optionId"`
-	Count    string `json:"count"`
+	Count    uint   `json:"count"`
 }

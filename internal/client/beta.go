@@ -33,7 +33,7 @@ func NewBetaClient(deps *BetaClientDeps) *BetaClient {
 	}
 }
 
-func (receiver *BetaClient) SendVotingState(request *core.VoteState) error {
+func (receiver *BetaClient) SendVotingState(request *core.VotingState) error {
 	if _, err := client.Post(votingStateURL, &client.RequestSettings[interface{}]{
 		Driver:   receiver.client,
 		Formdata: request,

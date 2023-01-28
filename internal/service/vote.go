@@ -4,17 +4,19 @@ import (
 	"context"
 
 	"github.com/sirupsen/logrus"
+	"github.com/yeahyeahcore/zonatelecom-tasks/internal/core"
 	"github.com/yeahyeahcore/zonatelecom-tasks/internal/models"
 	"github.com/yeahyeahcore/zonatelecom-tasks/internal/repository"
 )
 
 type VoteRepository interface {
-	GetVotingStates(ctx context.Context, votingID string) ([]*models.VotingState, error)
+	GetVotingState(ctx context.Context, votingID string) ([]*models.VotingState, error)
+	GetVotingStates(ctx context.Context) ([]*models.VotingState, error)
 	InsertVote(ctx context.Context, query *models.Vote) (*models.Vote, error)
 }
 
 type PrevVotingStateRepository interface {
-	GetPreviousVotingStates(ctx context.Context, query models.VotingState) ([]*models.VotingState, error)
+	GetPreviousVotingStates(ctx context.Context, query *models.VotingState) ([]*models.VotingState, error)
 	InsertPreviousVotingState(ctx context.Context, query *models.VotingState) (*models.VotingState, error)
 	InsertPreviousVotingStates(ctx context.Context, query []*models.VotingState) ([]*models.VotingState, error)
 }
@@ -40,7 +42,7 @@ func NewVoteService(deps *VoteServiceDeps) *VoteService {
 }
 
 func (receiver *VoteService) InsertVote(ctx context.Context, vote *models.Vote) error {
-	votingStates, err := receiver.voteRepository.GetVotingStates(ctx, vote.VotingID)
+	votingState, err := receiver.voteRepository.GetVotingState(ctx, vote.VotingID)
 	if err != nil && err != repository.ErrNoRecords {
 		receiver.logger.Errorf("failed to get voting states in VoteService method <InsertVote>: %s", err.Error())
 		return err
@@ -51,9 +53,25 @@ func (receiver *VoteService) InsertVote(ctx context.Context, vote *models.Vote) 
 		return err
 	}
 
-	if _, err := receiver.previousVotingStateRepository.InsertPreviousVotingStates(ctx, votingStates); err != nil {
+	if _, err := receiver.previousVotingStateRepository.InsertPreviousVotingStates(ctx, votingState); err != nil {
 		receiver.logger.Errorf("failed to insert previous voting states in VoteService method <InsertVote>: %s", err.Error())
 		return err
+	}
+
+	return nil
+}
+
+func (receiver *VoteService) CheckVotingPercentageChange(ctx context.Context) ([]*core.VotingState, error) {
+	votingStates, err := receiver.voteRepository.GetVotingStates(ctx)
+	if err != nil && err != repository.ErrNoRecords {
+		receiver.logger.Errorf("failed to get voting states in VoteService method <InsertVote>: %s", err.Error())
+		return []*core.VotingState{}, err
+	}
+
+	previousVotingStates, err := receiver.previousVotingStateRepository.GetPreviousVotingStates(ctx, nil)
+	if err != nil {
+		receiver.logger.Errorf("failed to insert previous voting states in VoteService method <InsertVote>: %s", err.Error())
+		return []*core.VotingState{}, err
 	}
 
 	return nil

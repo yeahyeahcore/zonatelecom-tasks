@@ -39,7 +39,7 @@ func (receiver *VoteRepository) InsertVote(ctx context.Context, model *models.Vo
 	return votes[0], nil
 }
 
-func (receiver *VoteRepository) GetVotingStates(ctx context.Context, votingID string) ([]*models.VotingState, error) {
+func (receiver *VoteRepository) GetVotingState(ctx context.Context, votingID string) ([]*models.VotingState, error) {
 	sql, err := receiver.constituteVotingStateSQL(votingID)
 	if err != nil {
 		return []*models.VotingState{}, err
@@ -59,10 +59,42 @@ func (receiver *VoteRepository) GetVotingStates(ctx context.Context, votingID st
 	return votingStates, nil
 }
 
+func (receiver *VoteRepository) GetVotingStates(ctx context.Context) ([]*models.VotingState, error) {
+	sql, err := receiver.constituteVotingStateSQL("")
+	if err != nil {
+		return []*models.VotingState{}, err
+	}
+
+	votingStates, err := postgres.Select(ctx, &postgres.QueryWrapper[models.VotingState]{
+		DB:  receiver.db,
+		SQL: sql,
+	})
+	if err != nil {
+		return []*models.VotingState{}, err
+	}
+	if len(votingStates) == 0 {
+		return []*models.VotingState{}, ErrNoRecords
+	}
+
+	return votingStates, nil
+}
+
 func (receiver *VoteRepository) constituteVotingStateSQL(votindID string) (string, error) {
-	sql, _, err := goqu.
-		Select(goqu.L("voting_id, option_id, COUNT(option_id")).
-		From(votesTableName).
+	dataset := goqu.Select(goqu.L("voting_id, option_id, COUNT(option_id")).From(votesTableName)
+
+	if votindID == "" {
+		sql, _, err := dataset.
+			GroupBy(goqu.L("voting_id, option_id")).
+			ToSQL()
+
+		if err != nil {
+			return "", err
+		}
+
+		return sql, nil
+	}
+
+	sql, _, err := dataset.
 		Where(goqu.Ex{"voting_id": votindID}).
 		GroupBy(goqu.L("voting_id, option_id")).
 		ToSQL()

@@ -10,32 +10,24 @@ import (
 	"github.com/yeahyeahcore/zonatelecom-tasks/pkg/json"
 )
 
-type VoteRepository interface {
-	GetVotingStates(ctx context.Context, votingID string) ([]*models.VotingState, error)
-	InsertVote(ctx context.Context, query *models.Vote) (*models.Vote, error)
-}
-
 type VoteService interface {
 	InsertVote(ctx context.Context, vote *models.Vote) error
 }
 
 type VoteControllerDeps struct {
-	Logger         *logrus.Logger
-	VoteRepository VoteRepository
-	VoteService    VoteService
+	Logger      *logrus.Logger
+	VoteService VoteService
 }
 
 type VoteController struct {
-	logger         *logrus.Logger
-	voteRepository VoteRepository
-	voteService    VoteService
+	logger      *logrus.Logger
+	voteService VoteService
 }
 
 func NewVoteController(deps *VoteControllerDeps) *VoteController {
 	return &VoteController{
-		logger:         deps.Logger,
-		voteRepository: deps.VoteRepository,
-		voteService:    deps.VoteService,
+		logger:      deps.Logger,
+		voteService: deps.VoteService,
 	}
 }
 
