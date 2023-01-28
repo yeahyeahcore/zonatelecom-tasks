@@ -1,8 +1,6 @@
 package repository
 
 const (
-	questionnaireStatusesTableName = "status_questionnaires"
-	accountDebtTableName           = "account_debt"
-	questionnairesTableName        = "questionnaires"
-	customersTableName             = "customers"
+	votesTableName         = "votes"
+	previousVotesTableName = "previous_votes"
 )

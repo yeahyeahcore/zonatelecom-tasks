@@ -12,7 +12,7 @@ import (
 )
 
 type VoteRepository interface {
-	GetVotingState(ctx context.Context, query *models.Vote) (*models.VotingState, error)
+	GetVotingState(ctx context.Context, votingID string) (*models.VotingState, error)
 	CreateVote(ctx context.Context, query *models.Vote) (*models.Vote, error)
 }
 
