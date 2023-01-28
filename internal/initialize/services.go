@@ -21,7 +21,7 @@ func NewServices(deps *ServicesDeps) *Services {
 			Logger:                    deps.Logger,
 			VoteRepository:            deps.Repositories.VoteRepository,
 			PrevVotingStateRepository: deps.Repositories.PreviousVotingStateRepository,
-			BetaClient:                deps.Clients.BetaClient,
+			GammaClient:               deps.Clients.GammaClient,
 		}),
 	}
 }

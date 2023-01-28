@@ -12,14 +12,14 @@ type ClientsDeps struct {
 }
 
 type Clients struct {
-	BetaClient *client.BetaClient
+	GammaClient *client.GammaClient
 }
 
 func NewClients(deps *ClientsDeps) *Clients {
 	return &Clients{
-		BetaClient: client.NewBetaClient(&client.BetaClientDeps{
+		GammaClient: client.NewGammaClient(&client.GammaClientDeps{
 			Logger:        deps.Logger,
-			Configuration: &deps.ServiceConfiguration.BetaServiceConfiguration,
+			Configuration: &deps.ServiceConfiguration.GammaServiceConfiguration,
 		}),
 	}
 }

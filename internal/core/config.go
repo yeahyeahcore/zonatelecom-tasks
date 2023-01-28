@@ -16,9 +16,9 @@ type HTTPConfiguration struct {
 }
 
 type ServiceConfiguration struct {
-	BetaServiceConfiguration BetaServiceConfiguration
+	GammaServiceConfiguration GammaServiceConfiguration
 }
 
-type BetaServiceConfiguration struct {
+type GammaServiceConfiguration struct {
 	BaseURL string `env:"BETA_SERVICE_URL,default=localhost"`
 }

@@ -11,7 +11,7 @@ import (
 
 type voteService interface {
 	CheckVotingPercentageChange(ctx context.Context) ([]*core.VotingState, error)
-	SendVotingStatesToBeta(ctx context.Context, votingStates []*core.VotingState) error
+	SendVotingStatesToGamma(ctx context.Context, votingStates []*core.VotingState) error
 }
 
 type VoteWorkerDeps struct {
@@ -55,7 +55,7 @@ func (receiver *VoteWorker) Run(ctx context.Context) {
 				continue
 			}
 
-			if err := receiver.voteService.SendVotingStatesToBeta(ctx, voteStates); err != nil {
+			if err := receiver.voteService.SendVotingStatesToGamma(ctx, voteStates); err != nil {
 				receiver.logger.Errorln(err)
 			}
 		}

@@ -14,18 +14,18 @@ const (
 	votingStateURL = "/voting-stats"
 )
 
-type BetaClientDeps struct {
+type GammaClientDeps struct {
 	Logger        *logrus.Logger
-	Configuration *core.BetaServiceConfiguration
+	Configuration *core.GammaServiceConfiguration
 }
 
-type BetaClient struct {
+type GammaClient struct {
 	logger *logrus.Logger
 	client *resty.Client
 }
 
-func NewBetaClient(deps *BetaClientDeps) *BetaClient {
-	return &BetaClient{
+func NewGammaClient(deps *GammaClientDeps) *GammaClient {
+	return &GammaClient{
 		logger: deps.Logger,
 		client: resty.New().
 			EnableTrace().
@@ -33,7 +33,7 @@ func NewBetaClient(deps *BetaClientDeps) *BetaClient {
 	}
 }
 
-func (receiver *BetaClient) SendVotingState(request *core.VotingState) error {
+func (receiver *GammaClient) SendVotingState(request *core.VotingState) error {
 	if _, err := client.Post(votingStateURL, &client.RequestSettings[interface{}]{
 		Driver:   receiver.client,
 		Formdata: request,

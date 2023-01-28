@@ -29,7 +29,7 @@ type VoteServiceDeps struct {
 	Logger                    *logrus.Logger
 	VoteRepository            voteRepository
 	PrevVotingStateRepository prevVotingStateRepository
-	BetaClient                betaClient
+	GammaClient               betaClient
 }
 
 type VoteService struct {
@@ -44,7 +44,7 @@ func NewVoteService(deps *VoteServiceDeps) *VoteService {
 		logger:                        deps.Logger,
 		voteRepository:                deps.VoteRepository,
 		previousVotingStateRepository: deps.PrevVotingStateRepository,
-		betaClient:                    deps.BetaClient,
+		betaClient:                    deps.GammaClient,
 	}
 }
 
@@ -101,6 +101,6 @@ func (receiver *VoteService) CheckVotingPercentageChange(ctx context.Context) ([
 	return changedVotingState, nil
 }
 
-func (receiver *VoteService) SendVotingStatesToBeta(ctx context.Context, votingStates []*core.VotingState) error {
+func (receiver *VoteService) SendVotingStatesToGamma(ctx context.Context, votingStates []*core.VotingState) error {
 	return nil
 }
