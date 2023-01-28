@@ -10,22 +10,22 @@ import (
 	"github.com/yeahyeahcore/zonatelecom-tasks/pkg/postgres"
 )
 
-type PreviousVoteRepository struct {
+type PreviousVotingStateRepository struct {
 	db     *pgxpool.Pool
 	logger *logrus.Logger
 }
 
-func NewPreviousVoteRepository(deps *RepositoryDeps) *PreviousVoteRepository {
-	return &PreviousVoteRepository{
+func NewPreviousVotingStateRepository(deps *RepositoryDeps) *PreviousVotingStateRepository {
+	return &PreviousVotingStateRepository{
 		db:     deps.Database,
 		logger: deps.Logger,
 	}
 }
 
-func (receiver *PreviousVoteRepository) InsertPreviousVotingState(ctx context.Context, model *models.VotingState) (*models.VotingState, error) {
+func (receiver *PreviousVotingStateRepository) InsertPreviousVotingState(ctx context.Context, model *models.VotingState) (*models.VotingState, error) {
 	votes, err := postgres.Insert(ctx, &postgres.QueryWrapper[models.VotingState]{
 		DB:        receiver.db,
-		TableName: previousVotesTableName,
+		TableName: previousVoteStatesTableName,
 		Model:     model,
 	})
 	if err != nil {
@@ -38,10 +38,10 @@ func (receiver *PreviousVoteRepository) InsertPreviousVotingState(ctx context.Co
 	return votes[0], nil
 }
 
-func (receiver *PreviousVoteRepository) GetPreviousVotingStates(ctx context.Context, model *models.VotingState) ([]*models.VotingState, error) {
+func (receiver *PreviousVotingStateRepository) GetPreviousVotingStates(ctx context.Context, model *models.VotingState) ([]*models.VotingState, error) {
 	votingStates, err := postgres.Select(ctx, &postgres.QueryWrapper[models.VotingState]{
 		DB:        receiver.db,
-		TableName: previousVotesTableName,
+		TableName: previousVoteStatesTableName,
 		Model:     model,
 	})
 	if err != nil {

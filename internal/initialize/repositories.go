@@ -13,9 +13,9 @@ type RepositoriesDeps struct {
 }
 
 type Repositories struct {
-	HealthRepository       *repository.HealthRepository
-	VoteRepository         *repository.VoteRepository
-	PreviousVoteRepository *repository.PreviousVoteRepository
+	HealthRepository              *repository.HealthRepository
+	VoteRepository                *repository.VoteRepository
+	PreviousVotingStateRepository *repository.PreviousVotingStateRepository
 }
 
 func NewRepositories(deps *RepositoriesDeps) *Repositories {
@@ -28,7 +28,7 @@ func NewRepositories(deps *RepositoriesDeps) *Repositories {
 			Logger:   deps.Logger,
 			Database: deps.Database,
 		}),
-		PreviousVoteRepository: repository.NewPreviousVoteRepository(&repository.RepositoryDeps{
+		PreviousVotingStateRepository: repository.NewPreviousVotingStateRepository(&repository.RepositoryDeps{
 			Logger:   deps.Logger,
 			Database: deps.Database,
 		}),
