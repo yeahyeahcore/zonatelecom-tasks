@@ -10,27 +10,33 @@ import (
 	"github.com/yeahyeahcore/zonatelecom-tasks/internal/utils"
 )
 
-type VoteRepository interface {
+type voteRepository interface {
 	GetVotingState(ctx context.Context, votingID string) ([]*models.VotingState, error)
 	GetVotingStates(ctx context.Context) ([]*models.VotingState, error)
 	InsertVote(ctx context.Context, query *models.Vote) (*models.Vote, error)
 }
 
-type PrevVotingStateRepository interface {
+type prevVotingStateRepository interface {
 	GetPreviousVotingStates(ctx context.Context, query *models.VotingState) ([]*models.VotingState, error)
 	InsertPreviousVotingStates(ctx context.Context, query []*models.VotingState) ([]*models.VotingState, error)
 }
 
+type betaClient interface {
+	SendVotingState(request *core.VotingState) error
+}
+
 type VoteServiceDeps struct {
 	Logger                    *logrus.Logger
-	VoteRepository            VoteRepository
-	PrevVotingStateRepository PrevVotingStateRepository
+	VoteRepository            voteRepository
+	PrevVotingStateRepository prevVotingStateRepository
+	BetaClient                betaClient
 }
 
 type VoteService struct {
 	logger                        *logrus.Logger
-	voteRepository                VoteRepository
-	previousVotingStateRepository PrevVotingStateRepository
+	voteRepository                voteRepository
+	previousVotingStateRepository prevVotingStateRepository
+	betaClient                    betaClient
 }
 
 func NewVoteService(deps *VoteServiceDeps) *VoteService {
@@ -38,6 +44,7 @@ func NewVoteService(deps *VoteServiceDeps) *VoteService {
 		logger:                        deps.Logger,
 		voteRepository:                deps.VoteRepository,
 		previousVotingStateRepository: deps.PrevVotingStateRepository,
+		betaClient:                    deps.BetaClient,
 	}
 }
 
@@ -92,4 +99,8 @@ func (receiver *VoteService) CheckVotingPercentageChange(ctx context.Context) ([
 	}
 
 	return changedVotingState, nil
+}
+
+func (receiver *VoteService) SendVotingStatesToBeta(ctx context.Context, votingStates []*core.VotingState) error {
+	return nil
 }

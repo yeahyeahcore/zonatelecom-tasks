@@ -16,7 +16,7 @@ const (
 
 type BetaClientDeps struct {
 	Logger        *logrus.Logger
-	Configuration core.BetaServiceConfiguration
+	Configuration *core.BetaServiceConfiguration
 }
 
 type BetaClient struct {

@@ -10,18 +10,18 @@ import (
 	"github.com/yeahyeahcore/zonatelecom-tasks/pkg/json"
 )
 
-type VoteService interface {
+type voteService interface {
 	InsertVote(ctx context.Context, vote *models.Vote) error
 }
 
 type VoteControllerDeps struct {
 	Logger      *logrus.Logger
-	VoteService VoteService
+	VoteService voteService
 }
 
 type VoteController struct {
 	logger      *logrus.Logger
-	voteService VoteService
+	voteService voteService
 }
 
 func NewVoteController(deps *VoteControllerDeps) *VoteController {

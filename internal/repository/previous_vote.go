@@ -38,6 +38,22 @@ func (receiver *PreviousVotingStateRepository) InsertPreviousVotingState(ctx con
 	return votes[0], nil
 }
 
+func (receiver *PreviousVotingStateRepository) InsertPreviousVotingStates(ctx context.Context, modelArray []*models.VotingState) ([]*models.VotingState, error) {
+	votes, err := postgres.Insert(ctx, &postgres.QueryWrapper[models.VotingState]{
+		DB:        receiver.db,
+		TableName: previousVoteStatesTableName,
+		Models:    modelArray,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(votes) == 0 {
+		return nil, ErrInsertRecord
+	}
+
+	return votes, nil
+}
+
 func (receiver *PreviousVotingStateRepository) GetPreviousVotingStates(ctx context.Context, model *models.VotingState) ([]*models.VotingState, error) {
 	votingStates, err := postgres.Select(ctx, &postgres.QueryWrapper[models.VotingState]{
 		DB:        receiver.db,
