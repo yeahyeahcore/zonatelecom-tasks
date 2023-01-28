@@ -5,12 +5,10 @@ import (
 )
 
 func (receiver *HTTP) Register(controllers *initialize.Controllers) *HTTP {
-	// groupVotes := receiver.echo.Group("/debt")
-	// {
-	// 	groupVotes.GET("/all", controllers.VotesController.GetAllVotess)
-	// 	groupVotes.GET("/:id", controllers.VotesController.GetVotesByID)
-	// 	groupVotes.POST("/search", controllers.VotesController.GetVotess)
-	// }
+	groupVotes := receiver.echo.Group("/voting")
+	{
+		groupVotes.POST("", controllers.VoteController.CreateVote)
+	}
 
 	return receiver
 }

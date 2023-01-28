@@ -12,34 +12,34 @@ import (
 )
 
 type VoteRepository interface {
-	GetVotingState(ctx context.Context, votingID string) (*models.VotingState, error)
-	CreateVote(ctx context.Context, query *models.Vote) (*models.Vote, error)
+	GetVotingStates(ctx context.Context, votingID string) ([]*models.VotingState, error)
+	InsertVote(ctx context.Context, query *models.Vote) (*models.Vote, error)
 }
 
 type VoteControllerDeps struct {
-	VotesRepository VoteRepository
-	Logger          *logrus.Logger
+	VoteRepository VoteRepository
+	Logger         *logrus.Logger
 }
 
-type VotesController struct {
+type VoteController struct {
 	debtRepository VoteRepository
 	logger         *logrus.Logger
 }
 
-func NewVotesController(deps *VoteControllerDeps) *VotesController {
-	return &VotesController{
-		debtRepository: deps.VotesRepository,
+func NewVoteController(deps *VoteControllerDeps) *VoteController {
+	return &VoteController{
+		debtRepository: deps.VoteRepository,
 		logger:         deps.Logger,
 	}
 }
 
-func (receiver *VotesController) CreateVote(ctx echo.Context) error {
+func (receiver *VoteController) CreateVote(ctx echo.Context) error {
 	voteBody, err := json.Parse[models.Vote](ctx.Request().Body)
 	if err != nil {
 		return responseBadRequest(ctx, err)
 	}
 
-	if _, err := receiver.debtRepository.CreateVote(ctx.Request().Context(), voteBody); err != nil {
+	if _, err := receiver.debtRepository.InsertVote(ctx.Request().Context(), voteBody); err != nil {
 		if err == repository.ErrAlreadyExist {
 			return responseConflict(ctx, err)
 		}

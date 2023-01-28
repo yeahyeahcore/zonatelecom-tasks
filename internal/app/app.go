@@ -24,8 +24,14 @@ func Run(config *core.Config, logger *logrus.Logger) {
 		panic(err)
 	}
 
+	repositories := initialize.NewRepositories(&initialize.RepositoriesDeps{
+		Logger:   logger,
+		Database: database,
+	})
+
 	controllers := initialize.NewControllers(&initialize.ControllersDeps{
-		Logger: logger,
+		Logger:       logger,
+		Repositories: repositories,
 	})
 
 	httpServer := server.New(logger).Register(controllers)
@@ -35,9 +41,9 @@ func Run(config *core.Config, logger *logrus.Logger) {
 		config:     &config.HTTP,
 	})
 
-	// gracefulShutdown(ctx, &gracefulShutdownDeps{
-	// 	httpServer: httpServer,
-	// 	database:   database,
-	// 	cancel:     cancel,
-	// })
+	gracefulShutdown(ctx, &gracefulShutdownDeps{
+		httpServer: httpServer,
+		database:   database,
+		cancel:     cancel,
+	})
 }
