@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	votingURL = "/voting"
+	votingStateURL = "/voting-stats"
 )
 
 type BetaClientDeps struct {
@@ -34,7 +34,7 @@ func NewBetaClient(deps *BetaClientDeps) *BetaClient {
 }
 
 func (receiver *BetaClient) SendVotingState(request *core.VoteState) error {
-	if _, err := client.Post(votingURL, &client.RequestSettings[interface{}]{
+	if _, err := client.Post(votingStateURL, &client.RequestSettings[interface{}]{
 		Driver:   receiver.client,
 		Formdata: request,
 	}); err != nil {
