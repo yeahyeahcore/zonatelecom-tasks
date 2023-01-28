@@ -2,22 +2,20 @@ package utils
 
 import (
 	"math"
-
-	"github.com/yeahyeahcore/zonatelecom-tasks/internal/core"
 )
 
 // Returns percentage difference beetwen options counts
-func GetVotingPercentageDifference(currentVotingState *core.VotingStateOptionsMap, perviousVotingState *core.VotingStateOptionsMap) map[string]float64 {
+func GetVotingPercentageDifference(currentOptions map[string]uint, perviousOptions map[string]uint) map[string]float64 {
 	percentageOptionsDifferenceMap := make(map[string]float64)
 
 	totalCount := uint(0)
 
-	for _, count := range currentVotingState.Options {
+	for _, count := range currentOptions {
 		totalCount += count
 	}
 
-	for currentOptionID, currentOptionCount := range currentVotingState.Options {
-		previousPercentage := int(float64(perviousVotingState.Options[currentOptionID]) / float64(totalCount) * 100)
+	for currentOptionID, currentOptionCount := range currentOptions {
+		previousPercentage := int(float64(perviousOptions[currentOptionID]) / float64(totalCount) * 100)
 		currentPercentage := int(float64(currentOptionCount) / float64(totalCount) * 100)
 		differnce := math.Abs(float64(currentPercentage - previousPercentage))
 

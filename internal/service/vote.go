@@ -77,6 +77,18 @@ func (receiver *VoteService) CheckVotingPercentageChange(ctx context.Context) ([
 
 	currentVotingStatesCore := utils.TransferVotingStateModelsToCore(currentVotingStates)
 	previousVotingStatesCore := utils.TransferVotingStateModelsToCore(previousVotingStates)
+	currentVotingStatesMap := utils.TransferVotingStatesToOptionsMap(currentVotingStatesCore)
+	previousVotingStatesMap := utils.TransferVotingStatesToOptionsMap(previousVotingStatesCore)
+
+	for _, currentVotingState := range currentVotingStatesMap {
+		for _, previousVotingState := range previousVotingStatesMap {
+			if currentVotingState.VotingID != previousVotingState.VotingID {
+				continue
+			}
+
+			difference := utils.GetVotingPercentageDifference(currentVotingState.Options, previousVotingState.Options)
+		}
+	}
 
 	return nil
 }
