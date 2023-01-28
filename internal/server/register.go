@@ -5,11 +5,11 @@ import (
 )
 
 func (receiver *HTTP) Register(controllers *initialize.Controllers) *HTTP {
-	// groupDebt := receiver.echo.Group("/debt")
+	// groupVotes := receiver.echo.Group("/debt")
 	// {
-	// 	groupDebt.GET("/all", controllers.DebtController.GetAllDebts)
-	// 	groupDebt.GET("/:id", controllers.DebtController.GetDebtByID)
-	// 	groupDebt.POST("/search", controllers.DebtController.GetDebts)
+	// 	groupVotes.GET("/all", controllers.VotesController.GetAllVotess)
+	// 	groupVotes.GET("/:id", controllers.VotesController.GetVotesByID)
+	// 	groupVotes.POST("/search", controllers.VotesController.GetVotess)
 	// }
 
 	return receiver

@@ -28,10 +28,3 @@ func badRequestError(ctx echo.Context, err error) error {
 		StatusCode: http.StatusBadRequest,
 	})
 }
-
-func authError(ctx echo.Context, err error) error {
-	return ctx.JSON(http.StatusUnauthorized, core.HTTPErrorResponse{
-		Message:    err.Error(),
-		StatusCode: http.StatusUnauthorized,
-	})
-}
