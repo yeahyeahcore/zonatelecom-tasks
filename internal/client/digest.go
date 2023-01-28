@@ -39,7 +39,7 @@ func (receiver *DigestClient) Check(digest string) error {
 	}); err != nil {
 		requestError := fmt.Errorf("check digest request error: %s", err.Error())
 		receiver.logger.Errorln(requestError)
-		return requestError
+		return ErrWrongDigest
 	}
 
 	return nil

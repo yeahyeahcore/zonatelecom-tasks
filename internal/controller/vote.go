@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 
+	"github.com/yeahyeahcore/zonatelecom-tasks/internal/client"
 	"github.com/yeahyeahcore/zonatelecom-tasks/internal/core"
 	"github.com/yeahyeahcore/zonatelecom-tasks/pkg/json"
 )
@@ -38,6 +39,10 @@ func (receiver *VoteController) CreateVote(ctx echo.Context) error {
 	}
 
 	if err := receiver.voteService.InsertVote(ctx.Request().Context(), voteBody); err != nil {
+		if err == client.ErrWrongDigest {
+			return responseBadRequest(ctx, err)
+		}
+
 		return responseInternal(ctx, err)
 	}
 

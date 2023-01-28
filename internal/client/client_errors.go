@@ -3,5 +3,5 @@ package client
 import "errors"
 
 var (
-	ErrClientAuth = errors.New("failed to auth from client")
+	ErrWrongDigest = errors.New("wrong digest")
 )

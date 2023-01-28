@@ -14,18 +14,6 @@ func responseInternal(ctx echo.Context, err error) error {
 	return ctx.JSON(statusCode, response)
 }
 
-func responseConflict(ctx echo.Context, err error) error {
-	statusCode, response := handleErrorResponse(http.StatusInternalServerError, err)
-
-	return ctx.JSON(statusCode, response)
-}
-
-func responseNotFound(ctx echo.Context, err error) error {
-	statusCode, response := handleErrorResponse(http.StatusNotFound, err)
-
-	return ctx.JSON(statusCode, response)
-}
-
 func responseBadRequest(ctx echo.Context, err error) error {
 	statusCode, response := handleErrorResponse(http.StatusBadRequest, err)
 
