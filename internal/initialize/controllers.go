@@ -8,6 +8,7 @@ import (
 type ControllersDeps struct {
 	Logger       *logrus.Logger
 	Repositories *Repositories
+	Services     *Services
 }
 
 type Controllers struct {
@@ -17,7 +18,8 @@ type Controllers struct {
 func NewControllers(deps *ControllersDeps) *Controllers {
 	return &Controllers{
 		VoteController: *controller.NewVoteController(&controller.VoteControllerDeps{
-			Logger: deps.Logger,
+			Logger:      deps.Logger,
+			VoteService: deps.Services.VoteService,
 		}),
 	}
 }

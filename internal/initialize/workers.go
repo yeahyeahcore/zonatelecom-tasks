@@ -1,6 +1,8 @@
 package initialize
 
 import (
+	"context"
+
 	"github.com/sirupsen/logrus"
 
 	"github.com/yeahyeahcore/zonatelecom-tasks/internal/worker"
@@ -22,4 +24,8 @@ func NewWorkers(deps *WorkersDeps) *Workers {
 			VoteService: deps.Services.VoteService,
 		}),
 	}
+}
+
+func (receiver *Workers) Run(ctx context.Context) {
+	go receiver.VoteWorker.Run(ctx)
 }

@@ -29,9 +29,26 @@ func Run(config *core.Config, logger *logrus.Logger) {
 		Database: database,
 	})
 
+	clients := initialize.NewClients(&initialize.ClientsDeps{
+		Logger:               logger,
+		ServiceConfiguration: &config.Service,
+	})
+
+	services := initialize.NewServices(&initialize.ServicesDeps{
+		Logger:       logger,
+		Repositories: repositories,
+		Clients:      clients,
+	})
+
 	controllers := initialize.NewControllers(&initialize.ControllersDeps{
 		Logger:       logger,
 		Repositories: repositories,
+		Services:     services,
+	})
+
+	workers := initialize.NewWorkers(&initialize.WorkersDeps{
+		Logger:   logger,
+		Services: services,
 	})
 
 	httpServer := server.New(logger).Register(controllers)
@@ -40,6 +57,8 @@ func Run(config *core.Config, logger *logrus.Logger) {
 		httpServer: httpServer,
 		config:     &config.HTTP,
 	})
+
+	workers.Run(ctx)
 
 	gracefulShutdown(ctx, &gracefulShutdownDeps{
 		httpServer: httpServer,
