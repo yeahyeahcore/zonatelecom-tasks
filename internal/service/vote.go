@@ -21,7 +21,7 @@ type prevVotingStateRepository interface {
 	InsertPreviousVotingStates(ctx context.Context, query []*models.VotingState) ([]*models.VotingState, error)
 }
 
-type betaClient interface {
+type gammaClient interface {
 	SendVotingState(request *core.VotingState) error
 }
 
@@ -29,14 +29,14 @@ type VoteServiceDeps struct {
 	Logger                    *logrus.Logger
 	VoteRepository            voteRepository
 	PrevVotingStateRepository prevVotingStateRepository
-	GammaClient               betaClient
+	GammaClient               gammaClient
 }
 
 type VoteService struct {
 	logger                        *logrus.Logger
 	voteRepository                voteRepository
 	previousVotingStateRepository prevVotingStateRepository
-	betaClient                    betaClient
+	gammaClient                   gammaClient
 }
 
 func NewVoteService(deps *VoteServiceDeps) *VoteService {
@@ -44,7 +44,7 @@ func NewVoteService(deps *VoteServiceDeps) *VoteService {
 		logger:                        deps.Logger,
 		voteRepository:                deps.VoteRepository,
 		previousVotingStateRepository: deps.PrevVotingStateRepository,
-		betaClient:                    deps.GammaClient,
+		gammaClient:                   deps.GammaClient,
 	}
 }
 
@@ -102,5 +102,12 @@ func (receiver *VoteService) CheckVotingPercentageChange(ctx context.Context) ([
 }
 
 func (receiver *VoteService) SendVotingStatesToGamma(ctx context.Context, votingStates []*core.VotingState) error {
+	for _, votingState := range votingStates {
+		if err := receiver.gammaClient.SendVotingState(votingState); err != nil {
+			receiver.logger.Errorf("failed to send states in VoteService method <SendVotingStatesToGamma>: %s", err.Error())
+			return err
+		}
+	}
+
 	return nil
 }
