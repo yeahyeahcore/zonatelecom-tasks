@@ -53,10 +53,7 @@ func Run(config *core.Config, logger *logrus.Logger) {
 
 	httpServer := server.New(logger).Register(controllers)
 
-	go runHTTP(&RunHTTPDeps{
-		httpServer: httpServer,
-		config:     &config.HTTP,
-	})
+	go httpServer.Start(&config.HTTP)
 
 	workers.Run(ctx)
 
