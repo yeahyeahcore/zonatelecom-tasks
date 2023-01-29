@@ -1,0 +1,1 @@
+CREATE INDEX CONCURRENTLY vote_voting_id_index ON votes (voting_id);

@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS prev_voting_id_index;
