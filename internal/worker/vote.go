@@ -10,8 +10,8 @@ import (
 )
 
 type voteService interface {
-	CheckVotingPercentageChange(ctx context.Context) ([]*core.VotingState, error)
-	SendVotingStatesToGamma(ctx context.Context, votingStates []*core.VotingState) error
+	CheckVotingPercentageChange(ctx context.Context) ([]*core.PreviousVotingState, error)
+	SendVotingStatesToGamma(ctx context.Context, votingStates []*core.PreviousVotingState) error
 }
 
 type VoteWorkerDeps struct {

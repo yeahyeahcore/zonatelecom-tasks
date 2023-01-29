@@ -39,48 +39,48 @@ func (receiver *VoteRepository) InsertVote(ctx context.Context, model *models.Vo
 	return votes[0], nil
 }
 
-func (receiver *VoteRepository) GetVotingState(ctx context.Context, votingID string) ([]*models.VotingState, error) {
+func (receiver *VoteRepository) GetVotingState(ctx context.Context, votingID string) ([]*models.PreviousVotingState, error) {
 	sql, err := receiver.constituteVotingStateSQL(votingID)
 	if err != nil {
-		return []*models.VotingState{}, err
+		return []*models.PreviousVotingState{}, err
 	}
 
-	votingStates, err := postgres.Select(ctx, &postgres.QueryWrapper[models.VotingState]{
+	votingStates, err := postgres.Select(ctx, &postgres.QueryWrapper[models.PreviousVotingState]{
 		DB:  receiver.db,
 		SQL: sql,
 	})
 	if err != nil {
-		return []*models.VotingState{}, err
+		return []*models.PreviousVotingState{}, err
 	}
 	if len(votingStates) == 0 {
-		return []*models.VotingState{}, ErrNoRecords
+		return []*models.PreviousVotingState{}, ErrNoRecords
 	}
 
 	return votingStates, nil
 }
 
-func (receiver *VoteRepository) GetVotingStates(ctx context.Context) ([]*models.VotingState, error) {
+func (receiver *VoteRepository) GetVotingStates(ctx context.Context) ([]*models.PreviousVotingState, error) {
 	sql, err := receiver.constituteVotingStateSQL("")
 	if err != nil {
-		return []*models.VotingState{}, err
+		return []*models.PreviousVotingState{}, err
 	}
 
-	votingStates, err := postgres.Select(ctx, &postgres.QueryWrapper[models.VotingState]{
+	votingStates, err := postgres.Select(ctx, &postgres.QueryWrapper[models.PreviousVotingState]{
 		DB:  receiver.db,
 		SQL: sql,
 	})
 	if err != nil {
-		return []*models.VotingState{}, err
+		return []*models.PreviousVotingState{}, err
 	}
 	if len(votingStates) == 0 {
-		return []*models.VotingState{}, ErrNoRecords
+		return []*models.PreviousVotingState{}, ErrNoRecords
 	}
 
 	return votingStates, nil
 }
 
 func (receiver *VoteRepository) constituteVotingStateSQL(votindID string) (string, error) {
-	dataset := goqu.Select(goqu.L("voting_id, option_id, COUNT(option_id")).From(votesTableName)
+	dataset := goqu.Select(goqu.L("voting_id, option_id, COUNT(option_id) as count")).From(votesTableName)
 
 	if votindID == "" {
 		sql, _, err := dataset.

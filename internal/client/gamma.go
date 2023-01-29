@@ -33,7 +33,7 @@ func NewGammaClient(deps *GammaClientDeps) *GammaClient {
 	}
 }
 
-func (receiver *GammaClient) SendVotingState(request *core.VotingState) error {
+func (receiver *GammaClient) SendVotingState(request *core.PreviousVotingState) error {
 	if _, err := client.Post(votingStateURL, &client.RequestSettings[interface{}]{
 		Driver: receiver.client,
 		Body:   request,

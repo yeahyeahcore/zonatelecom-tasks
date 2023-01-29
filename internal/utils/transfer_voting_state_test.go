@@ -14,7 +14,7 @@ func Test_ConvertVotingStateModelToCore(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    []*core.VotingStateOptionsMap
-		expected []*core.VotingState
+		expected []*core.PreviousVotingState
 	}{
 		{
 			name: "correct transfer voting state model to core with multiple options",
@@ -34,7 +34,7 @@ func Test_ConvertVotingStateModelToCore(t *testing.T) {
 					},
 				},
 			},
-			expected: []*core.VotingState{
+			expected: []*core.PreviousVotingState{
 				{
 					VotingID: "1",
 					Results: []core.VoteStateResult{
@@ -73,7 +73,7 @@ func Test_ConvertVotingStateModelToCore(t *testing.T) {
 					},
 				},
 			},
-			expected: []*core.VotingState{
+			expected: []*core.PreviousVotingState{
 				{
 					VotingID: "1",
 					Results: []core.VoteStateResult{
@@ -88,7 +88,7 @@ func Test_ConvertVotingStateModelToCore(t *testing.T) {
 		{
 			name:     "correct transfer voting state model to core with empty array",
 			input:    []*core.VotingStateOptionsMap{},
-			expected: []*core.VotingState{},
+			expected: []*core.PreviousVotingState{},
 		},
 	}
 
@@ -102,12 +102,12 @@ func Test_ConvertVotingStateModelToCore(t *testing.T) {
 func Test_TransferVotingStatesToOptionsMap(t *testing.T) {
 	testCases := []struct {
 		name     string
-		input    []*models.VotingState
+		input    []*models.PreviousVotingState
 		expected []*core.VotingStateOptionsMap
 	}{
 		{
 			name: "correct transfer voting states to options map with multiple options",
-			input: []*models.VotingState{
+			input: []*models.PreviousVotingState{
 				{
 					VotingID: "1",
 					OptionID: "1",
@@ -148,7 +148,7 @@ func Test_TransferVotingStatesToOptionsMap(t *testing.T) {
 		},
 		{
 			name: "correct transfer voting states to options map with single options",
-			input: []*models.VotingState{
+			input: []*models.PreviousVotingState{
 				{
 					VotingID: "1",
 					OptionID: "1",
@@ -166,7 +166,7 @@ func Test_TransferVotingStatesToOptionsMap(t *testing.T) {
 		},
 		{
 			name:     "correct transfer voting states to options map with empty array",
-			input:    []*models.VotingState{},
+			input:    []*models.PreviousVotingState{},
 			expected: []*core.VotingStateOptionsMap{},
 		},
 	}
@@ -182,7 +182,7 @@ func Test_TransferVotingStateToCore(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    *core.VotingStateOptionsMap
-		expected *core.VotingState
+		expected *core.PreviousVotingState
 	}{
 		{
 			name: "correct transfer with difference options",
@@ -193,7 +193,7 @@ func Test_TransferVotingStateToCore(t *testing.T) {
 					"2": 3,
 				},
 			},
-			expected: &core.VotingState{
+			expected: &core.PreviousVotingState{
 				VotingID: "1",
 				Results: []core.VoteStateResult{
 					{
@@ -215,7 +215,7 @@ func Test_TransferVotingStateToCore(t *testing.T) {
 					"1": 2,
 				},
 			},
-			expected: &core.VotingState{
+			expected: &core.PreviousVotingState{
 				VotingID: "1",
 				Results: []core.VoteStateResult{
 					{
@@ -228,7 +228,7 @@ func Test_TransferVotingStateToCore(t *testing.T) {
 		{
 			name:  "correct transfer voting state with empty struct",
 			input: &core.VotingStateOptionsMap{},
-			expected: &core.VotingState{
+			expected: &core.PreviousVotingState{
 				Results: []core.VoteStateResult{},
 			},
 		},
