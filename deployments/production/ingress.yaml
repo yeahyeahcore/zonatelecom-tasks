@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: production
+  name: beta-service-app-ingress
+  annotations:
+    kubernetes.io/ingress.class: haproxy
+    haproxy-ingress.github.io/secure-crt-secret: "staging/beta-tls"
+spec:
+  tls:
+    - secretName: beta-tls
+      hosts:
+        - service-beta
+  rules:
+    - host: service-beta
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: beta-service-app
+                port:
+                  name: service-port

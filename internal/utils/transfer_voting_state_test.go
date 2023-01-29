@@ -10,7 +10,7 @@ import (
 	"github.com/yeahyeahcore/zonatelecom-tasks/internal/utils"
 )
 
-func Test_ConvertVotingStateModelToCore(t *testing.T) {
+func Test_TransferVotingStatesToCore(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    []*core.VotingStateOptionsMap
