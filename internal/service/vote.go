@@ -81,6 +81,21 @@ func (receiver *VoteService) InsertVote(ctx context.Context, vote *core.CreateVo
 		return err
 	}
 
+	voteStates, err := receiver.CheckVotingPercentageChange(ctx)
+	if err != nil {
+		receiver.logger.Errorf("failed to check percentage voting in VoteService method <InsertVote>: %s", err.Error())
+		return err
+	}
+	if len(voteStates) < 1 {
+		receiver.logger.Infof("empty vote states in VoteService method <InsertVote>")
+		return nil
+	}
+
+	if err := receiver.SendVotingStatesToGamma(ctx, voteStates); err != nil {
+		receiver.logger.Errorf("failed to send voting states in VoteService method <InsertVote>: %s", err.Error())
+		return err
+	}
+
 	return nil
 }
 
