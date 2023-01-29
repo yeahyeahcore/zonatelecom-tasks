@@ -1,6 +1,6 @@
 package repository
 
 const (
-	votesTableName              = "votes"
-	previousVoteStatesTableName = "previous_vote_states"
+	votesTableName                = "votes"
+	previousVotingStatesTableName = "previous_voting_states"
 )

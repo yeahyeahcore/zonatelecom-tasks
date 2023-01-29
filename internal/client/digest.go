@@ -33,12 +33,17 @@ func NewDigestClient(deps *DigestClientDeps) *DigestClient {
 }
 
 func (receiver *DigestClient) Check(digest string) error {
-	if _, err := client.Post(checkDigestURL, &client.RequestSettings[interface{}]{
+	response, err := client.Post(checkDigestURL, &client.RequestSettings[core.HTTPDefaultResponse]{
 		Driver: receiver.client,
 		Body:   map[string]string{"digest": digest},
-	}); err != nil {
+	})
+	if err != nil {
 		requestError := fmt.Errorf("check digest request error: %s", err.Error())
 		receiver.logger.Errorln(requestError)
+		return ErrWrongDigest
+	}
+	if response.Result == "fail" {
+		receiver.logger.Errorln("failed to check digest")
 		return ErrWrongDigest
 	}
 

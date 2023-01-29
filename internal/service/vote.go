@@ -11,18 +11,18 @@ import (
 )
 
 type voteRepository interface {
-	GetVotingState(ctx context.Context, votingID string) ([]*models.VotingState, error)
-	GetVotingStates(ctx context.Context) ([]*models.VotingState, error)
+	GetVotingState(ctx context.Context, votingID string) ([]*models.PreviousVotingState, error)
+	GetVotingStates(ctx context.Context) ([]*models.PreviousVotingState, error)
 	InsertVote(ctx context.Context, query *models.Vote) (*models.Vote, error)
 }
 
 type prevVotingStateRepository interface {
-	GetPreviousVotingStates(ctx context.Context, query *models.VotingState) ([]*models.VotingState, error)
-	InsertPreviousVotingStates(ctx context.Context, query []*models.VotingState) ([]*models.VotingState, error)
+	GetPreviousVotingStates(ctx context.Context, query *models.PreviousVotingState) ([]*models.PreviousVotingState, error)
+	InsertPreviousVotingStates(ctx context.Context, query []*models.PreviousVotingState) ([]*models.PreviousVotingState, error)
 }
 
 type gammaClient interface {
-	SendVotingState(request *core.VotingState) error
+	SendVotingState(request *core.PreviousVotingState) error
 }
 
 type digestClient interface {
@@ -81,26 +81,41 @@ func (receiver *VoteService) InsertVote(ctx context.Context, vote *core.CreateVo
 		return err
 	}
 
+	voteStates, err := receiver.CheckVotingPercentageChange(ctx)
+	if err != nil {
+		receiver.logger.Errorf("failed to check percentage voting in VoteService method <InsertVote>: %s", err.Error())
+		return err
+	}
+	if len(voteStates) < 1 {
+		receiver.logger.Infof("empty vote states in VoteService method <InsertVote>")
+		return nil
+	}
+
+	if err := receiver.SendVotingStatesToGamma(ctx, voteStates); err != nil {
+		receiver.logger.Errorf("failed to send voting states in VoteService method <InsertVote>: %s", err.Error())
+		return err
+	}
+
 	return nil
 }
 
-func (receiver *VoteService) CheckVotingPercentageChange(ctx context.Context) ([]*core.VotingState, error) {
+func (receiver *VoteService) CheckVotingPercentageChange(ctx context.Context) ([]*core.PreviousVotingState, error) {
 	currentVotingStates, err := receiver.voteRepository.GetVotingStates(ctx)
 	if err != nil && err != repository.ErrNoRecords {
 		receiver.logger.Errorf("failed to get voting states in VoteService method <CheckVotingPercentageChange>: %s", err.Error())
-		return []*core.VotingState{}, err
+		return []*core.PreviousVotingState{}, err
 	}
 
 	previousVotingStates, err := receiver.previousVotingStateRepository.GetPreviousVotingStates(ctx, nil)
 	if err != nil {
 		receiver.logger.Errorf("failed to get previous voting states in VoteService method <CheckVotingPercentageChange>: %s", err.Error())
-		return []*core.VotingState{}, err
+		return []*core.PreviousVotingState{}, err
 	}
 
 	currentVotingStatesMap := utils.TransferVotingStatesToOptionsMap(currentVotingStates)
 	previousVotingStatesMap := utils.TransferVotingStatesToOptionsMap(previousVotingStates)
 
-	changedVotingState := make([]*core.VotingState, 0)
+	changedVotingState := make([]*core.PreviousVotingState, 0)
 
 	for _, currentVotingState := range currentVotingStatesMap {
 		for _, previousVotingState := range previousVotingStatesMap {
@@ -117,7 +132,7 @@ func (receiver *VoteService) CheckVotingPercentageChange(ctx context.Context) ([
 	return changedVotingState, nil
 }
 
-func (receiver *VoteService) SendVotingStatesToGamma(ctx context.Context, votingStates []*core.VotingState) error {
+func (receiver *VoteService) SendVotingStatesToGamma(ctx context.Context, votingStates []*core.PreviousVotingState) error {
 	for _, votingState := range votingStates {
 		if err := receiver.gammaClient.SendVotingState(votingState); err != nil {
 			receiver.logger.Errorf("failed to send states in VoteService method <SendVotingStatesToGamma>: %s", err.Error())

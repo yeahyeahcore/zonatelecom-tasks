@@ -46,16 +46,9 @@ func Run(config *core.Config, logger *logrus.Logger) {
 		Services:     services,
 	})
 
-	workers := initialize.NewWorkers(&initialize.WorkersDeps{
-		Logger:   logger,
-		Services: services,
-	})
-
 	httpServer := server.New(logger).Register(controllers)
 
 	go httpServer.Start(&config.HTTP)
-
-	workers.Run(ctx)
 
 	gracefulShutdown(ctx, &gracefulShutdownDeps{
 		httpServer: httpServer,

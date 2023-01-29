@@ -7,7 +7,7 @@ type CreateVoteRequest struct {
 	Digest   string `json:"digest"`
 }
 
-type VotingState struct {
+type PreviousVotingState struct {
 	VotingID string            `json:"votingId"`
 	Results  []VoteStateResult `json:"results"`
 }

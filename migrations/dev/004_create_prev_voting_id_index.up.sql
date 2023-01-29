@@ -1,0 +1,1 @@
+CREATE INDEX CONCURRENTLY prev_voting_id_index ON previous_voting_states (voting_id);

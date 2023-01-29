@@ -5,8 +5,8 @@ import (
 	"github.com/yeahyeahcore/zonatelecom-tasks/internal/models"
 )
 
-func TransferVotingStatesToCore(votingStates []*core.VotingStateOptionsMap) []*core.VotingState {
-	transferedVotingState := make([]*core.VotingState, len(votingStates))
+func TransferVotingStatesToCore(votingStates []*core.VotingStateOptionsMap) []*core.PreviousVotingState {
+	transferedVotingState := make([]*core.PreviousVotingState, len(votingStates))
 
 	for index, votingState := range votingStates {
 		transferedVotingState[index] = TransferVotingStateToCore(votingState)
@@ -15,7 +15,7 @@ func TransferVotingStatesToCore(votingStates []*core.VotingStateOptionsMap) []*c
 	return transferedVotingState
 }
 
-func TransferVotingStateToCore(votingState *core.VotingStateOptionsMap) *core.VotingState {
+func TransferVotingStateToCore(votingState *core.VotingStateOptionsMap) *core.PreviousVotingState {
 	results := make([]core.VoteStateResult, len(votingState.Options))
 	optionsIterationNumber := 0
 
@@ -28,13 +28,13 @@ func TransferVotingStateToCore(votingState *core.VotingStateOptionsMap) *core.Vo
 		optionsIterationNumber++
 	}
 
-	return &core.VotingState{
+	return &core.PreviousVotingState{
 		VotingID: votingState.VotingID,
 		Results:  results,
 	}
 }
 
-func TransferVotingStatesToOptionsMap(votingStates []*models.VotingState) []*core.VotingStateOptionsMap {
+func TransferVotingStatesToOptionsMap(votingStates []*models.PreviousVotingState) []*core.VotingStateOptionsMap {
 	transferedVotingStateMap := make(map[string][]core.VoteStateResult)
 
 	for _, votingState := range votingStates {

@@ -22,10 +22,10 @@ func NewPreviousVotingStateRepository(deps *RepositoryDeps) *PreviousVotingState
 	}
 }
 
-func (receiver *PreviousVotingStateRepository) InsertPreviousVotingState(ctx context.Context, model *models.VotingState) (*models.VotingState, error) {
-	votes, err := postgres.Insert(ctx, &postgres.QueryWrapper[models.VotingState]{
+func (receiver *PreviousVotingStateRepository) InsertPreviousVotingState(ctx context.Context, model *models.PreviousVotingState) (*models.PreviousVotingState, error) {
+	votes, err := postgres.Insert(ctx, &postgres.QueryWrapper[models.PreviousVotingState]{
 		DB:        receiver.db,
-		TableName: previousVoteStatesTableName,
+		TableName: previousVotingStatesTableName,
 		Model:     model,
 	})
 	if err != nil {
@@ -38,10 +38,10 @@ func (receiver *PreviousVotingStateRepository) InsertPreviousVotingState(ctx con
 	return votes[0], nil
 }
 
-func (receiver *PreviousVotingStateRepository) InsertPreviousVotingStates(ctx context.Context, modelArray []*models.VotingState) ([]*models.VotingState, error) {
-	votes, err := postgres.Insert(ctx, &postgres.QueryWrapper[models.VotingState]{
+func (receiver *PreviousVotingStateRepository) InsertPreviousVotingStates(ctx context.Context, modelArray []*models.PreviousVotingState) ([]*models.PreviousVotingState, error) {
+	votes, err := postgres.Insert(ctx, &postgres.QueryWrapper[models.PreviousVotingState]{
 		DB:        receiver.db,
-		TableName: previousVoteStatesTableName,
+		TableName: previousVotingStatesTableName,
 		Models:    modelArray,
 	})
 	if err != nil {
@@ -54,17 +54,17 @@ func (receiver *PreviousVotingStateRepository) InsertPreviousVotingStates(ctx co
 	return votes, nil
 }
 
-func (receiver *PreviousVotingStateRepository) GetPreviousVotingStates(ctx context.Context, model *models.VotingState) ([]*models.VotingState, error) {
-	votingStates, err := postgres.Select(ctx, &postgres.QueryWrapper[models.VotingState]{
+func (receiver *PreviousVotingStateRepository) GetPreviousVotingStates(ctx context.Context, model *models.PreviousVotingState) ([]*models.PreviousVotingState, error) {
+	votingStates, err := postgres.Select(ctx, &postgres.QueryWrapper[models.PreviousVotingState]{
 		DB:        receiver.db,
-		TableName: previousVoteStatesTableName,
+		TableName: previousVotingStatesTableName,
 		Model:     model,
 	})
 	if err != nil {
-		return []*models.VotingState{}, err
+		return []*models.PreviousVotingState{}, err
 	}
 	if len(votingStates) == 0 {
-		return []*models.VotingState{}, ErrNoRecords
+		return []*models.PreviousVotingState{}, ErrNoRecords
 	}
 
 	return votingStates, nil
