@@ -25,7 +25,7 @@ spec:
                 name: beta-service-config
           ports:
             - name: app-port
-              containerPort: 8080
+              containerPort: 8000
           livenessProbe:
             httpGet:
               path: /_health/check
