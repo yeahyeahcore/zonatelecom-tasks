@@ -14,6 +14,12 @@ func responseInternal(ctx echo.Context, err error) error {
 	return ctx.JSON(statusCode, response)
 }
 
+func responseServiceUnavailable(ctx echo.Context) error {
+	statusCode, response := handleErrorResponse(http.StatusServiceUnavailable, nil)
+
+	return ctx.JSON(statusCode, response)
+}
+
 func responseBadRequest(ctx echo.Context, err error) error {
 	statusCode, response := handleErrorResponse(http.StatusBadRequest, err)
 

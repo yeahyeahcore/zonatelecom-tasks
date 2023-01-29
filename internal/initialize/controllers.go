@@ -12,14 +12,18 @@ type ControllersDeps struct {
 }
 
 type Controllers struct {
-	VoteController controller.VoteController
+	VoteController        *controller.VoteController
+	HealthCheckController *controller.HealthCheckController
 }
 
 func NewControllers(deps *ControllersDeps) *Controllers {
 	return &Controllers{
-		VoteController: *controller.NewVoteController(&controller.VoteControllerDeps{
+		VoteController: controller.NewVoteController(&controller.VoteControllerDeps{
 			Logger:      deps.Logger,
 			VoteService: deps.Services.VoteService,
+		}),
+		HealthCheckController: controller.NewHealthCheckController(&controller.HealthCheckControllerDeps{
+			HealthCheckRepository: deps.Repositories.HealthRepository,
 		}),
 	}
 }

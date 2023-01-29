@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: beta-service-app
+  labels:
+    app: beta-service
+spec:
+  type: NodePort
+  ports:
+    - name: service-port
+      port: 8080
+      targetPort: app-port
+  selector:
+    app: beta-service

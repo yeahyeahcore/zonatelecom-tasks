@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beta-service
+  labels:
+    app: beta-service
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: beta-service
+  template:
+    metadata:
+      labels:
+        app: beta-service
+    spec:
+      containers:
+        - name: beta-service-container
+          image: <IMAGE>
+          envFrom:
+            - configMapRef:
+                name: beta-service-config
+          ports:
+            - name: app-port
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /_health/check
+              port: 8000
+          readinessProbe:
+            httpGet:
+              path: /_health/ready
+              port: 8000
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
